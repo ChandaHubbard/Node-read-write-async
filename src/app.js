@@ -1,32 +1,16 @@
-require('dotenv').config()
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const helmet = require('helmet')
-const { NODE_ENV } = require('./config')
+const fs = require('fs');
 
-const app = express()
+function readAndOutputFile(pathOfFile) {
+  const ourFile = fs.readFileSync(pathOfFile, 'utf8');
 
-const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
+  return ourFile;
+}
 
-app.use(morgan(morganOption))
-app.use(helmet())
+function writeIntoFileSync(pathOfFile, text){
+  fs.writeFileSync(pathOfFile, text);
 
-app.get('/', (req, res) => {
-    res.send('Hello, world!')
-})
+  return readAndOutputFile(pathOfFile);
+}
 
-app.use(function errorHandler(error, req, res, next) {
-    let response
-    if (NODE_ENV === 'production') {
-        response = { error: { message: 'server error' } }
-    } else {
-        console.error(error)
-        response = { message: error.message, error }
-    }
-    res.status(500).json(response)
-})
 
-app.use(cors())
-
-module.exports = app
+writeIntoFileSync('./test.txt', 'We are writing into a file')
